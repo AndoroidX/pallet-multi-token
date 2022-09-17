@@ -1,8 +1,14 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 use sp_runtime::traits::StaticLookup;
-
+mod functions;
+mod multi_token;
+mod mintable;
+#[cfg(test)]
+mod test;
 type AccountIdLookupOf<T> = <<T as frame_system::Config>::Lookup as StaticLookup>::Source;
+
+pub use pallet::*;
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -70,7 +76,7 @@ pub mod pallet {
 	#[pallet::event]
 	#[pallet::generate_deposit(pub fn deposit_event)]
 	pub enum Event<T: Config> {
-		TransferredSingle{origin: T::AccountId, from: T::AccountId, to: T::AccountId, id: T::AssetId, amount: T::Balance},
+		Transferred{origin: T::AccountId, from: T::AccountId, to: T::AccountId, id: T::AssetId, amount: T::Balance},
 		Created{admin: T::AccountId, id: T::AssetId},
 		Minted{origin: T::AccountId, to: T::AccountId, id: T::AssetId, amount: T::Balance},
 		Burned{operator: T::AccountId, from: T::AccountId, id: T::AssetId, amount: T::Balance},
@@ -79,9 +85,11 @@ pub mod pallet {
 
 	#[pallet::error]
 	pub enum Error<T> {
-		NotAnAdmin,
+		NoPermission,
 		NotApproved,
 		NotEnoughBalance,
+		UndefinedAccount,
+		Overflow
 	}
 
 	// transfer
