@@ -5,6 +5,8 @@ mod functions;
 mod multi_token;
 mod mintable;
 #[cfg(test)]
+pub mod mock;
+#[cfg(test)]
 mod test;
 type AccountIdLookupOf<T> = <<T as frame_system::Config>::Lookup as StaticLookup>::Source;
 
@@ -17,6 +19,7 @@ pub mod pallet {
 	use frame_system::pallet_prelude::*;
 	use frame_support::dispatch::HasCompact;
 	use sp_runtime::traits::AtLeast32BitUnsigned;
+	use crate::multi_token::MultiTokenTrait;
 
 	#[pallet::pallet]
 	#[pallet::generate_store(pub(super) trait Store)]
@@ -46,6 +49,7 @@ pub mod pallet {
 	}
 
 	#[pallet::storage]
+	#[pallet::getter(fn get_asset)]
 	pub type Assets<T: Config> = StorageMap<
 		_,
 		Blake2_128Concat,
@@ -54,6 +58,7 @@ pub mod pallet {
 	>;
 
 	#[pallet::storage]
+	#[pallet::getter(fn get_account)]
 	pub type Accounts<T: Config> = StorageDoubleMap<
 		_,
 		Blake2_128Concat,
@@ -64,6 +69,7 @@ pub mod pallet {
 	>;
 
 	#[pallet::storage]
+	#[pallet::getter(fn get_approval)]
 	pub type Approvals<T: Config> = StorageDoubleMap<
 		_,
 		Blake2_128Concat,
@@ -101,7 +107,6 @@ pub mod pallet {
 
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
-		// r[1] w[]
 		#[pallet::weight(10_000_000)]
 		pub fn transfer(
 			origin: OriginFor<T>, 
@@ -114,7 +119,7 @@ pub mod pallet {
 			let from = T::Lookup::lookup(from)?;
 			let to = T::Lookup::lookup(to)?;
 
-			unimplemented!()
+			Self::safe_transfer(operator, from, to, id, amount)
 		}
 	}
 }

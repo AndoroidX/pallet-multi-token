@@ -1,10 +1,10 @@
 use frame_support::ensure;
-use frame_support::pallet_prelude::{DispatchResult, DispatchError};
-use sp_runtime::traits::{CheckedAdd, CheckedSub, Saturating, Zero};
+use frame_support::pallet_prelude::{DispatchResult};
+use sp_runtime::traits::{Zero};
 use super::*;
 
-impl<T: Config> MultiToken<T> for Pallet<T> {
-    fn transfer(operator: T::AccountId, from: T::AccountId, to: T::AccountId, id: T::AssetId, value: T::Balance) -> DispatchResult {
+impl<T: Config> MultiTokenTrait<T> for Pallet<T> {
+    fn safe_transfer(operator: T::AccountId, from: T::AccountId, to: T::AccountId, id: T::AssetId, value: T::Balance) -> DispatchResult {
         // Permission check
         if operator != from {
             let is_approved = match Approvals::<T>::get(&from, &operator) {
@@ -36,7 +36,7 @@ impl<T: Config> MultiToken<T> for Pallet<T> {
     }
 }
 
-trait MultiToken<T: Config> {
-    fn transfer(operator: T::AccountId, from: T::AccountId, to: T::AccountId, id: T::AssetId, value: T::Balance) -> DispatchResult;
+pub trait MultiTokenTrait<T: Config> {
+    fn safe_transfer(operator: T::AccountId, from: T::AccountId, to: T::AccountId, id: T::AssetId, value: T::Balance) -> DispatchResult;
     fn approve_all(owner: T::AccountId, operator: T::AccountId, approved: bool) -> DispatchResult;
 }
