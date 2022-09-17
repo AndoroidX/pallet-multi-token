@@ -121,6 +121,18 @@ pub mod pallet {
 
 			Self::safe_transfer(operator, from, to, id, amount)
 		}
+
+		#[pallet::weight(10_000_000)]
+		pub fn approve(
+			origin: OriginFor<T>, 
+			operator: AccountIdLookupOf<T>,
+			is_approved: bool
+		) -> DispatchResult {
+			let owner = ensure_signed(origin)?;
+			let operator = T::Lookup::lookup(operator)?;
+
+			Self::set_approve_all(owner, operator, is_approved)
+		}
 	}
 }
 

@@ -31,12 +31,26 @@ impl<T: Config> MultiTokenTrait<T> for Pallet<T> {
         return Ok(())
     }
 
-    fn approve_all(owner: T::AccountId, operator: T::AccountId, approved: bool) -> DispatchResult {
-        todo!()
+    fn set_approve_all(owner: T::AccountId, operator: T::AccountId, approved: bool) -> DispatchResult {
+        if owner == operator {
+            return Ok(());
+        }
+        match Approvals::<T>::get(&owner, &operator) {
+            Some(is_approved) => {
+                if is_approved == approved {
+                    return Ok(());
+                }
+                Approvals::<T>::set(&owner, &operator, Some(approved));
+            },
+            None => {
+                Approvals::<T>::insert(&owner, &operator, approved);
+            }
+        }
+        Ok(())
     }
 }
 
 pub trait MultiTokenTrait<T: Config> {
     fn safe_transfer(operator: T::AccountId, from: T::AccountId, to: T::AccountId, id: T::AssetId, value: T::Balance) -> DispatchResult;
-    fn approve_all(owner: T::AccountId, operator: T::AccountId, approved: bool) -> DispatchResult;
+    fn set_approve_all(owner: T::AccountId, operator: T::AccountId, approved: bool) -> DispatchResult;
 }
