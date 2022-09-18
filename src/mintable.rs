@@ -1,4 +1,4 @@
-use frame_support::ensure;
+use frame_support::{ensure};
 use frame_support::pallet_prelude::{DispatchResult};
 use sp_runtime::traits::{Zero, Saturating};
 use super::*;
@@ -8,6 +8,7 @@ impl<T: Config> Mintable<T> for Pallet<T> {
         let id = match AssetIdNonce::<T>::get() {
             Some(mut nonce) => {
                 nonce.saturating_inc();
+                AssetIdNonce::<T>::put(nonce);
                 nonce
             },
             None => {
