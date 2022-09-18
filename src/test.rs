@@ -70,3 +70,26 @@ fn transfer_more_than_on_balance() {
         assert_ok!(MultiToken::transfer(Origin::signed(1), 1, 2, 0, 105));
     });
 }
+
+#[test]
+fn create_and_mint() {
+    new_test_ext().execute_with(|| {
+        assert_ok!(MultiToken::create(Origin::signed(1)));
+        assert_ok!(MultiToken::mint(Origin::signed(1), 0, 100));
+        assert_eq!(MultiToken::get_asset_id_nonce().unwrap(), 0);
+        assert_eq!(MultiToken::get_asset(0).unwrap(), 1);
+        assert_eq!(MultiToken::get_account(0, 1).unwrap(), 100);
+    });
+}
+
+#[test]
+fn create_nonce_increment() {
+    new_test_ext().execute_with(|| {
+        assert_ok!(MultiToken::create(Origin::signed(1)));
+        assert_eq!(MultiToken::get_asset_id_nonce().unwrap(), 0);
+        assert_ok!(MultiToken::create(Origin::signed(1)));
+        assert_eq!(MultiToken::get_asset_id_nonce().unwrap(), 1);
+        assert_ok!(MultiToken::create(Origin::signed(2)));
+        assert_eq!(MultiToken::get_asset_id_nonce().unwrap(), 2);
+    });
+}

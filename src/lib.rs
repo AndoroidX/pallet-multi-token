@@ -83,6 +83,7 @@ pub mod pallet {
 	>;
 
 	#[pallet::storage]
+	#[pallet::getter(fn get_asset_id_nonce)]
 	pub type AssetIdNonce<T: Config> = StorageValue<_, T::AssetId>;
 
 	#[pallet::event]
