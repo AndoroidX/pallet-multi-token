@@ -2,7 +2,7 @@
 
 use sp_runtime::traits::StaticLookup;
 mod functions;
-mod multi_token;
+pub mod multi_token;
 mod mintable;
 #[cfg(test)]
 pub mod mock;

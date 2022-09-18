@@ -1,9 +1,11 @@
-use frame_support::ensure;
+use frame_support::{ensure};
 use frame_support::pallet_prelude::{DispatchResult};
-use sp_runtime::traits::{Zero};
+use sp_runtime::traits::{Zero, AtLeast32BitUnsigned};
+use frame_support::pallet_prelude::*;
+use frame_support::dispatch::HasCompact;
 use super::*;
 
-impl<T: Config> MultiTokenTrait<T> for Pallet<T> {
+impl<T: Config> MultiTokenTrait<T, T::AssetId, T::Balance> for Pallet<T> {
     fn safe_transfer(operator: T::AccountId, from: T::AccountId, to: T::AccountId, id: T::AssetId, value: T::Balance) -> DispatchResult {
         // Permission check
         if operator != from {
@@ -51,7 +53,28 @@ impl<T: Config> MultiTokenTrait<T> for Pallet<T> {
     }
 }
 
-pub trait MultiTokenTrait<T: Config> {
-    fn safe_transfer(operator: T::AccountId, from: T::AccountId, to: T::AccountId, id: T::AssetId, value: T::Balance) -> DispatchResult;
+pub trait MultiTokenTrait<T, AssetId, Balance> 
+where 
+    T: frame_system::Config,
+    Balance: Member
+        + Parameter
+        + AtLeast32BitUnsigned
+        + Default
+        + Copy
+        + MaybeSerializeDeserialize
+        + MaxEncodedLen
+        + TypeInfo,
+    AssetId: Member
+        + Parameter
+        + AtLeast32BitUnsigned
+        + Default
+        + Copy
+        + HasCompact
+        + MaybeSerializeDeserialize
+        + MaxEncodedLen
+        + TypeInfo
+        + Zero
+    {
+    fn safe_transfer(operator: T::AccountId, from: T::AccountId, to: T::AccountId, id: AssetId, value: Balance) -> DispatchResult;
     fn set_approve_all(owner: T::AccountId, operator: T::AccountId, approved: bool) -> DispatchResult;
 }

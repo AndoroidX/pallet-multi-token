@@ -1,5 +1,5 @@
-use frame_support::{ensure};
-use frame_support::pallet_prelude::{DispatchResult};
+use frame_support::ensure;
+use frame_support::pallet_prelude::DispatchResult;
 use sp_runtime::traits::{Zero, Saturating};
 use super::*;
 
