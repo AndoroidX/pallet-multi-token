@@ -46,6 +46,7 @@ impl<T: Config> MultiTokenTrait<T> for Pallet<T> {
                 Approvals::<T>::insert(&owner, &operator, approved);
             }
         }
+        Self::deposit_event(Event::<T>::ApprovedAll { origin: owner, operator: operator, is_approved: approved });
         Ok(())
     }
 }

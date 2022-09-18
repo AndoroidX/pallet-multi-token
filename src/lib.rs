@@ -18,8 +18,9 @@ pub mod pallet {
 	use frame_support::pallet_prelude::*;
 	use frame_system::pallet_prelude::*;
 	use frame_support::dispatch::HasCompact;
-	use sp_runtime::traits::AtLeast32BitUnsigned;
+	use sp_runtime::traits::{AtLeast32BitUnsigned, Zero};
 	use crate::multi_token::MultiTokenTrait;
+	use crate::mintable::Mintable;
 
 	#[pallet::pallet]
 	#[pallet::generate_store(pub(super) trait Store)]
@@ -40,12 +41,14 @@ pub mod pallet {
 
 		type AssetId: Member
 			+ Parameter
+			+ AtLeast32BitUnsigned
 			+ Default
 			+ Copy
 			+ HasCompact
 			+ MaybeSerializeDeserialize
 			+ MaxEncodedLen
-			+ TypeInfo;
+			+ TypeInfo
+			+ Zero;
 	}
 
 	#[pallet::storage]
@@ -79,12 +82,15 @@ pub mod pallet {
 		bool, // is approved for all
 	>;
 
+	#[pallet::storage]
+	pub type AssetIdNonce<T: Config> = StorageValue<_, T::AssetId>;
+
 	#[pallet::event]
 	#[pallet::generate_deposit(pub fn deposit_event)]
 	pub enum Event<T: Config> {
 		Transferred{origin: T::AccountId, from: T::AccountId, to: T::AccountId, id: T::AssetId, amount: T::Balance},
 		Created{admin: T::AccountId, id: T::AssetId},
-		Minted{origin: T::AccountId, to: T::AccountId, id: T::AssetId, amount: T::Balance},
+		Minted{origin: T::AccountId, id: T::AssetId, amount: T::Balance},
 		Burned{operator: T::AccountId, from: T::AccountId, id: T::AssetId, amount: T::Balance},
 		ApprovedAll{origin: T::AccountId, operator: T::AccountId, is_approved: bool}
 	}
@@ -95,7 +101,8 @@ pub mod pallet {
 		NotApproved,
 		NotEnoughBalance,
 		UndefinedAccount,
-		Overflow
+		Overflow,
+		UndefinedAsset
 	}
 
 	// transfer
@@ -132,6 +139,26 @@ pub mod pallet {
 			let operator = T::Lookup::lookup(operator)?;
 
 			Self::set_approve_all(owner, operator, is_approved)
+		}
+
+		#[pallet::weight(10_000_000)]
+		pub fn create(
+			origin: OriginFor<T>
+		) -> DispatchResult {
+			let creator = ensure_signed(origin)?;
+
+			Self::create_token(creator)
+		}
+
+		#[pallet::weight(10_000_000)]
+		pub fn mint(
+			origin: OriginFor<T>,
+			id: T::AssetId,
+			amount: T::Balance
+		) -> DispatchResult {
+			let minter = ensure_signed(origin)?;
+
+			Self::mint_tokens(minter, id, amount)
 		}
 	}
 }
