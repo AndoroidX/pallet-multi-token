@@ -1,7 +1,7 @@
+use super::*;
 use frame_support::ensure;
 use frame_support::pallet_prelude::DispatchResult;
-use sp_runtime::traits::{Zero, Saturating};
-use super::*;
+use sp_runtime::traits::{Saturating, Zero};
 
 impl<T: Config> Mintable<T> for Pallet<T> {
     fn create_token(admin: T::AccountId) -> DispatchResult {
@@ -10,7 +10,7 @@ impl<T: Config> Mintable<T> for Pallet<T> {
                 nonce.saturating_inc();
                 AssetIdNonce::<T>::put(nonce);
                 nonce
-            },
+            }
             None => {
                 let zero: T::AssetId = Zero::zero();
                 AssetIdNonce::<T>::put(zero);
@@ -26,7 +26,11 @@ impl<T: Config> Mintable<T> for Pallet<T> {
         let admin = Assets::<T>::get(&id).ok_or(Error::<T>::UndefinedAsset)?;
         ensure!(admin == minter, Error::<T>::NoPermission);
         Self::credit(&minter, &id, amount.clone())?;
-        Self::deposit_event(Event::<T>::Minted { origin: minter, id: id, amount: amount });
+        Self::deposit_event(Event::<T>::Minted {
+            origin: minter,
+            id: id,
+            amount: amount,
+        });
         Ok(())
     }
 }

@@ -1,6 +1,6 @@
 use crate::mock::*;
 
-use frame_support::{assert_ok};
+use frame_support::assert_ok;
 
 #[test]
 fn transfer() {
@@ -18,7 +18,7 @@ fn approve() {
     new_test_ext().execute_with(|| {
         assert_ok!(MultiToken::approve(Origin::signed(1), 2, true));
         assert!(MultiToken::get_approval(1, 2).unwrap());
-        assert!(!MultiToken::get_approval(2,1).unwrap_or(false));
+        assert!(!MultiToken::get_approval(2, 1).unwrap_or(false));
         assert_ok!(MultiToken::approve(Origin::signed(1), 2, false));
         assert!(!MultiToken::get_approval(1, 2).unwrap());
     });
@@ -56,8 +56,8 @@ fn transfer_from_nonexisting_account() {
 #[should_panic]
 fn transfer_with_overflow() {
     new_test_ext().execute_with(|| {
-        assert_ok!(MultiToken::credit(&1, &0, u128::MAX-1));
-        assert_ok!(MultiToken::credit(&2, &0, u128::MAX-1));
+        assert_ok!(MultiToken::credit(&1, &0, u128::MAX - 1));
+        assert_ok!(MultiToken::credit(&2, &0, u128::MAX - 1));
         assert_ok!(MultiToken::transfer(Origin::signed(1), 1, 2, 0, 5));
     });
 }
