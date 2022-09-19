@@ -11,7 +11,8 @@ impl<T: Config> Pallet<T> {
     ) -> DispatchResult {
         let account = Accounts::<T>::get(&id, &target).ok_or(Error::<T>::UndefinedAccount)?;
         ensure!(account >= value, Error::<T>::NotEnoughBalance);
-        account.checked_sub(&value).ok_or(Error::<T>::Overflow)?;
+        let new_amount = account.checked_sub(&value).ok_or(Error::<T>::Overflow)?;
+        Accounts::<T>::set(&id, &target, Some(new_amount));
         Ok(())
     }
 
@@ -22,7 +23,8 @@ impl<T: Config> Pallet<T> {
     ) -> DispatchResult {
         match Accounts::<T>::get(&id, &target) {
             Some(account) => {
-                account.checked_add(&value).ok_or(Error::<T>::Overflow)?;
+                let new_amount = account.checked_add(&value).ok_or(Error::<T>::Overflow)?;
+                Accounts::<T>::set(&id, &target, Some(new_amount));
             }
             None => {
                 Accounts::<T>::insert(&id, &target, value);
