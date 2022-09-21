@@ -120,11 +120,17 @@ pub mod pallet {
 
     #[pallet::error]
     pub enum Error<T> {
+        // The lack of permission for this operation
         NoPermission,
+        // There is no approval record for giver operator
         NotApproved,
+        // Not enough balance for the transfer to be done
         NotEnoughBalance,
+        // The account is undefined / does not hold tokens
         UndefinedAccount,
+        // Arithmetic overflow
         Overflow,
+        // The asset is undefined
         UndefinedAsset,
     }
 
