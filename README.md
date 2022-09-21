@@ -32,7 +32,7 @@ UndefinedAsset,
 is a map storage, stores admins (creators and minters) of an asset. Key is an `Config::AssetId` and value is `Config::AccountId` - address of an admin.
 
 ### `Accounts`
-is a double map storage, stores balances. Keys are `Config::AssetId` and `Config::AccountId`, value is a `Config::Balance` - balance of `AssetId` on account `AccountId`. _Note, empty, but previously active accounts are **not stored.**_
+is a double map storage, stores balances. Keys are `Config::AssetId` and `Config::AccountId`, value is a `Config::Balance` - balance of `AssetId` on account `AccountId`. _Note, empty, but previously active accounts, are stored_
 
 ### `Approvals`
 is a double map storage, stores approvals. Keys are `Config::AccountId` - owner, `Config::AccountId` - operator. The value is a `bool` - wether assets are approved to be spent by this operator.
