@@ -1,6 +1,6 @@
 use super::*;
 use frame_support::ensure;
-use sp_runtime::traits::{CheckedAdd, CheckedSub};
+use sp_runtime::traits::{CheckedAdd, CheckedSub, Zero};
 use sp_runtime::DispatchResult;
 
 impl<T: Config> Pallet<T> {
@@ -12,7 +12,11 @@ impl<T: Config> Pallet<T> {
         let account = Accounts::<T>::get(&id, &target).ok_or(Error::<T>::UndefinedAccount)?;
         ensure!(account >= value, Error::<T>::NotEnoughBalance);
         let new_amount = account.checked_sub(&value).ok_or(Error::<T>::Overflow)?;
-        Accounts::<T>::set(&id, &target, Some(new_amount));
+        if new_amount.is_zero() {
+            Accounts::<T>::remove(&id, &target);
+        } else {
+            Accounts::<T>::set(&id, &target, Some(new_amount));
+        }
         Ok(())
     }
 

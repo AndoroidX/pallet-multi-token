@@ -69,6 +69,10 @@ impl<T: Config> MultiTokenTrait<T, T::AssetId, T::Balance> for Pallet<T> {
     fn get_balance(id: &T::AssetId, account: &T::AccountId) -> Option<T::Balance> {
         Self::get_account(id, account)
     }
+
+    fn is_approved_for_all(owner: &T::AccountId, operator: &T::AccountId) -> bool {
+        Self::get_approval(owner, operator).unwrap_or(false)
+    }
 }
 
 pub trait MultiTokenTrait<T, AssetId, Balance>
@@ -106,4 +110,5 @@ where
         approved: bool,
     ) -> DispatchResult;
     fn get_balance(id: &AssetId, account: &T::AccountId) -> Option<Balance>;
+    fn is_approved_for_all(owner: &T::AccountId, operator: &T::AccountId) -> bool;
 }

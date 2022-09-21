@@ -128,16 +128,9 @@ pub mod pallet {
         UndefinedAsset,
     }
 
-    // transfer
-    // approve_all
-    // create
-    // mint
-    // burn
-    // set_admin
-
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-        #[pallet::weight(10_000_000)]
+        #[pallet::weight(1000)]
         pub fn transfer(
             origin: OriginFor<T>,
             from: AccountIdLookupOf<T>,
@@ -152,7 +145,7 @@ pub mod pallet {
             Self::safe_transfer(operator, from, to, id, amount)
         }
 
-        #[pallet::weight(10_000_000)]
+        #[pallet::weight(1000)]
         pub fn approve(
             origin: OriginFor<T>,
             operator: AccountIdLookupOf<T>,
@@ -164,14 +157,14 @@ pub mod pallet {
             Self::set_approve_all(owner, operator, is_approved)
         }
 
-        #[pallet::weight(10_000_000)]
+        #[pallet::weight(1000)]
         pub fn create(origin: OriginFor<T>) -> DispatchResult {
             let creator = ensure_signed(origin)?;
 
             Self::create_token(creator)
         }
 
-        #[pallet::weight(10_000_000)]
+        #[pallet::weight(1000)]
         pub fn mint(origin: OriginFor<T>, id: T::AssetId, amount: T::Balance) -> DispatchResult {
             let minter = ensure_signed(origin)?;
 
