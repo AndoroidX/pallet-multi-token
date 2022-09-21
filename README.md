@@ -1,6 +1,8 @@
 # pallet-multi-token
 Implementation of ERC1155 like token standard as a pallet for Substrate.
 
+## Environment
+Environment has been configured in a fork of `substrate-node-template` on a branch `pallet-multi-token`. [Link](https://github.com/AndoroidX/substrate-node-template/tree/pallet-multi-token)
 ## Config
 ### `type Balance` 
 is a number-like type which is used to store balances.
