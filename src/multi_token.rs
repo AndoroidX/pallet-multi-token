@@ -15,10 +15,7 @@ impl<T: Config> MultiTokenTrait<T, T::AssetId, T::Balance> for Pallet<T> {
     ) -> DispatchResult {
         // Permission check
         if operator != from {
-            let is_approved = match Approvals::<T>::get(&from, &operator) {
-                Some(approved) => approved,
-                None => false,
-            };
+            let is_approved = Approvals::<T>::get(&from, &operator).unwrap_or(false);
             ensure!(is_approved, Error::<T>::NotApproved);
         }
         if value.is_zero() {
@@ -27,8 +24,8 @@ impl<T: Config> MultiTokenTrait<T, T::AssetId, T::Balance> for Pallet<T> {
         if from == to {
             return Ok(());
         }
-        Self::debit(&from, &id, value.clone())?;
-        Self::credit(&to, &id, value.clone())?;
+        Self::debit(&from, &id, value)?;
+        Self::credit(&to, &id, value)?;
         Self::deposit_event(Event::<T>::Transferred {
             origin: operator,
             from,
@@ -36,7 +33,7 @@ impl<T: Config> MultiTokenTrait<T, T::AssetId, T::Balance> for Pallet<T> {
             id,
             amount: value,
         });
-        return Ok(());
+        Ok(())
     }
 
     fn set_approve_all(
@@ -60,7 +57,7 @@ impl<T: Config> MultiTokenTrait<T, T::AssetId, T::Balance> for Pallet<T> {
         }
         Self::deposit_event(Event::<T>::ApprovedAll {
             origin: owner,
-            operator: operator,
+            operator,
             is_approved: approved,
         });
         Ok(())

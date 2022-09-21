@@ -18,18 +18,18 @@ impl<T: Config> Mintable<T> for Pallet<T> {
             }
         };
         Assets::<T>::insert(&id, &admin);
-        Self::deposit_event(Event::<T>::Created { admin: admin, id });
+        Self::deposit_event(Event::<T>::Created { admin, id });
         Ok(())
     }
 
     fn mint_tokens(minter: T::AccountId, id: T::AssetId, amount: T::Balance) -> DispatchResult {
         let admin = Assets::<T>::get(&id).ok_or(Error::<T>::UndefinedAsset)?;
         ensure!(admin == minter, Error::<T>::NoPermission);
-        Self::credit(&minter, &id, amount.clone())?;
+        Self::credit(&minter, &id, amount)?;
         Self::deposit_event(Event::<T>::Minted {
             origin: minter,
-            id: id,
-            amount: amount,
+            id,
+            amount,
         });
         Ok(())
     }
